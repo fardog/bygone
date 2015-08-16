@@ -1,6 +1,6 @@
 {
   "name": "bygone",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Listen for navigation and stream HTML5 location history",
   "main": "lib/index.js",
   "scripts": {
