@@ -51,7 +51,10 @@ function createBygone ({root = null} = {}) {
   }
 
   function uninstall () {
-    eventListener.end()
+    if (eventListener) {
+      eventListener.end()
+      eventListener = null
+    }
 
     return stream
   }
@@ -83,7 +86,7 @@ function createBygone ({root = null} = {}) {
       return false
     }
 
-    if (root && !toCheck.path.startsWith(root)) {
+    if (root && toCheck.path.indexOf(root) === -1) {
       return false
     }
 
