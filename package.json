@@ -4,6 +4,7 @@
   "description": "Listen for navigation and stream HTML5 location history",
   "main": "lib/index.js",
   "scripts": {
+    "prepublish": "npm run compile",
     "test": "npm run lint && browserify -t babelify test/index.js | ghostface | tap-set-exit",
     "lint": "standard src/**/*.js test/**/*.js",
     "compile": "babel src --out-dir lib",
