@@ -6,7 +6,7 @@ const through = require('through')
 
 module.exports = createBygone
 
-function createBygone ({root = null} = {}) {
+function createBygone () {
   const stream = through(write, end)
   const lookupHref = dotpath('target.href')
   const lookupPath = dotpath('location.pathname')
@@ -15,6 +15,7 @@ function createBygone ({root = null} = {}) {
   const history = window.history
 
   let eventListener
+  let rootStr
 
   stream.install = install
   stream.uninstall = uninstall
@@ -43,7 +44,13 @@ function createBygone ({root = null} = {}) {
     stream.queue(lookupPath(document))
   }
 
-  function install (el = document.body) {
+  function install ({root = null, el = document.body} = {}) {
+    if (eventListener) {
+      throw new Error('bygone: event listener already installed')
+    }
+
+    rootStr = root
+
     eventListener = events(el, 'click', 'a')
     eventListener.on('data', handler)
 
@@ -86,7 +93,7 @@ function createBygone ({root = null} = {}) {
       return false
     }
 
-    if (root && toCheck.path.indexOf(root) === -1) {
+    if (rootStr && toCheck.path.indexOf(rootStr) !== 0) {
       return false
     }
 

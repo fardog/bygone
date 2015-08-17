@@ -83,6 +83,18 @@ test('can set up event listeners', function (t) {
   trigger(document.querySelector('[name=one]'), 'click')
 })
 
+test('cannot install twice', function (t) {
+  t.plan(1)
+
+  const instance = bygone().install()
+
+  t.throws(function () {
+    instance.install()
+  })
+
+  instance.end()
+})
+
 test('non-local links ignored', function (t) {
   t.plan(1)
 
@@ -110,7 +122,7 @@ test('non-base links ignored', function (t) {
   // stop our links from acutally navigating the page
   const prevent = events(document, 'click', 'a', {preventDefault: true})
 
-  const instance = bygone({root: '/base'}).install()
+  const instance = bygone().install({root: '/base'})
 
   instance.once('data', data => {
     t.equal(data, '/base/beep')

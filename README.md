@@ -47,19 +47,57 @@ emitted as expected.
 
 ## API
 
-`bygone([opts]) -> duplexStream`
-
-- `opts`: (object) an optional configuration object. can have the following
-  properties:
-    - `root`: (string) the root URL to watch under; if `root` is `/base/` only
-      urls starting with `/base/` will be hooked.
+`bygone() -> duplexStream`
 
 Instances have the following methods:
 
-- `instance.install() -> instance`: Installs the `a` element listeners, and
+- `instance.install([opts]) -> instance`: Installs the `a` element listeners, and
   returns the instance to allow chaining.
+    - `opts`: (object) an optional configuration object. can have the following
+      properties:
+        - `root`: (string) the root URL to watch under; if `root` is `/base/`
+          only urls starting with `/base/` will be hooked.
+        - `el`: (domElement) the element onto which the listeners should be
+          installed. Defaults to `document.body`
 - `instance.uninstall() -> instance`: Remove the `a` element listeners.
 
+## Advanced Usage
+
+The `instance.install` method is intentionally simplistic, and available for
+convenience only. If you wanted something more complex, the tools are available
+to do this in a very composable fashion:
+
+```javascript
+const through = require('through')
+const events = require('dom-delegation-stream')
+const cursor = require('object-cursor-stream')
+const bygone = require('bygone')
+
+events(document.body, 'click', 'a', {preventDefault: true, stopPropagation: true})
+  .pipe(cursor('target.href'))
+  .pipe(filterStream('/beep'))
+  .pipe(bygone())
+    .on('data', data => console.log(data))
+
+function filterStream(base) {
+  const stream = through(write)
+  const props = ['protocol', 'hostname', 'port']
+
+  return stream
+
+  function write(data) {
+    // if the string doesn't start with our base string, drop it
+    if (data && data.indexOf(base) !== 0) {
+      return
+    }
+
+    stream.queue(data)
+  }
+}
+```
+
+Now when you clicked on any link with a URL starting with `/beep`, it would be
+pushed into your history state via bygone, and logged to the console.
 
 ## License
 
