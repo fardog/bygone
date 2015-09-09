@@ -161,7 +161,6 @@ test('uninstall removes eventlisteners', function (t) {
   })
 
   trigger(document.querySelector('[name=one]'), 'click')
-
 })
 
 test('teardown', function (t) {
